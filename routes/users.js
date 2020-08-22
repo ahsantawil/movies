@@ -103,4 +103,9 @@ router.post('/register/', function(req, res) {
     )
   }
 });
+// Logout
+router.get('/logout', function(req, res) {
+  res.redirect('/');
+})
+
 module.exports = router;
