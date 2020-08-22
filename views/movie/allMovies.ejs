@@ -6,9 +6,17 @@
             <%= data.name %>
         </div>
         <div class="card-body">
-          <h5 class="card-title"><%= data.release_on %></h5>
-          <a href="#" class="btn btn-primary">Edit</a>
-          <a href="#" class="btn btn-primary">Delete</a>
+          <h5 class="card-title">Tanggal Tayang : <%= data.release_on.toLocaleString().split(',')[0] %></h5>
+          <a href="movies/update/<%= data.id %>" class="btn btn-primary">Edit</a>
+          <a class="btn btn-primary" data-toggle="collapse" href="#data<%= data.id %>" role="button" aria-expanded="false" aria-controls="collapseExample">
+           Delete Data
+          </a>
+        </div>
+      </div>
+      <div class="collapse" id="data<%= data.id %>">
+        <div class="card card-body">
+          Apakah anda yakin untuk menghapus film <%= data.name %> ?
+          <a href="movies/delete/<%= data.id %>" class="btn btn-primary">Delete</a>
         </div>
       </div>
 <%}%>

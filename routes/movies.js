@@ -1,5 +1,6 @@
 const express    = require('express');
 const { render } = require('ejs');
+const moment     = require('moment');
 
 const router    = express.Router();
 const Movie     = require('../models/movieSchema');
@@ -37,9 +38,16 @@ router.get('/create', function(req, res, next) {
 
 //Update Movie
 router.get('/update/:movieId', function(req, res, next) {
-    res,render('movie/updateMovies', {
-        title:'Update Movies',
-        movieId:req.params.movieId
+
+    Movie.findById(req.params.movieId, function(err, movieInfo){
+        const newDate = moment(movieInfo.release_on).format("YYYY-MM-DD");
+        if (movieInfo) {
+            console.log(movieInfo);
+            res.render('movie/updateMovies', {
+                movies : movieInfo,
+                newDate
+            })
+        }
     })
 });
 
@@ -66,14 +74,31 @@ router.post('/create', function(req, res){
     }
 });
 
-//Action Update
-router.put('/update/movieId', function(req, res){
+//Action Update , jika menggunakan API menggunakan put jika tidak menggunakan API gunakan post
+router.post('/update', function(req, res){
+    let errors = [];
 
+    Movie.findByIdAndUpdate(req.body.id,{name:req.body.name, release_on: req.body.date}, function(err){
+        if (err) {
+            console.log(err);
+        } else {
+            errors.push({msg:'Data Berhasil terupdate'});
+            const newMovies = {_id:req.body.id, name:req.body.name};
+            const newDate   = moment(req.body.date).format("YYYY-MM-DD");
+            res.render('movie/updateMovies', {
+                movies : newMovies,
+                newDate,
+                errors
+            })
+        }
+    })
 });
 
-//Action Delete
-router.delete('/delete/:movieId', function(req, res){
-
+//Action Delete jika menggunakan API menggunakan delete jika tidak menggunakan API gunakan get
+router.get('/delete/:movieId', function(req, res){
+   Movie.findByIdAndDelete(req.params.movieId, function(){
+       res.redirect('/movies');
+   });
 });
 
 
