@@ -4,14 +4,28 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var expressLayout = require('express-ejs-layouts');
+
+const db    = require('./config/db');
+
+var indexRouter  = require('./routes/index');
+var usersRouter  = require('./routes/users');
+var moviesRoutes = require('./routes/movies');
 
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.use(expressLayout);
 app.set('view engine', 'ejs');
+
+// Express Body parser
+app.use(express.urlencoded({ extended:true }));
+
+// Connection mongodb
+db.connection.on(
+  'error', 
+  console.error.bind(console, 'Mongodb Connection Error:')
+);
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -20,7 +34,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/auth', usersRouter);
+app.use('/movies', moviesRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
