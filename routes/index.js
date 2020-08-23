@@ -5,7 +5,7 @@ const {cekAuth, forwardAuth} = require('../config/auth');
 
 /* Halaman Welcome */
 router.get('/', forwardAuth, function(req, res, next) {
-  res.render('welcome', { title: 'Halaman Welcome' });
+  res.render('welcome', { title: 'Welcome to Apps' });
 });
 
 // Halaman Dashboard
