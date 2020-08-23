@@ -22,7 +22,7 @@ require('./config/passport')(passport);
 
 // Connection mongodb
 db.connection.on(
-  'error', 
+  'error',
   console.error.bind(console, 'Mongodb Connection Error:')
 );
 
@@ -69,6 +69,5 @@ app.use('/movies', moviesRoutes);
 app.use(function(req, res, next) {
   next(createError(404));
 });
-
 
 module.exports = app;

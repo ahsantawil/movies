@@ -46,7 +46,7 @@ router.post('/register/', function(req, res) {
 
     let errors = [];
 
-  if (!name || !email || !password || password2) {
+  if (!name || !email || !password || !password2) {
     errors.push({ msg:"Silahkan lengkapi data anda" });
     console.log("Silahkan Lengkapi data anda");
   }
@@ -83,8 +83,10 @@ router.post('/register/', function(req, res) {
             email,
             password
           });
-          newUser.save().then(user => {
+          newUser.save().then(
+            user => {
             console.log('Selamat anda berhasil registrasi, Silahkan login');
+            errors.push({ msg:"Selamat anda berhasil registrasi, Silahkan login" });
             res.redirect('/auth/login');
           }).catch(err=>console.log(err));
         }
