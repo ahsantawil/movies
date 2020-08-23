@@ -3,6 +3,9 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const passport = require('passport');
+const flash    = require('connect-flash');
+const session  = require('express-session');
 
 var expressLayout = require('express-ejs-layouts');
 
@@ -14,12 +17,8 @@ var moviesRoutes = require('./routes/movies');
 
 var app = express();
 
-// view engine setup
-app.use(expressLayout);
-app.set('view engine', 'ejs');
-
-// Express Body parser
-app.use(express.urlencoded({ extended:true }));
+// config passport
+require('./config/passport')(passport);
 
 // Connection mongodb
 db.connection.on(
@@ -27,11 +26,40 @@ db.connection.on(
   console.error.bind(console, 'Mongodb Connection Error:')
 );
 
+// view engine setup
+app.use(expressLayout);
+app.set('view engine', 'ejs');
+
+// Express Body parser
+app.use(express.urlencoded({ extended:true }));
+
+// express session
+app.use(session({
+  secret: 'secret',
+  resave: true,
+  saveUninitialized: true
+}));
+
+// passport midleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+// connect flash
+app.use(flash());
+
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// global variable
+
+app.use(function(req, res , next){
+  res.locals.error = req.flash('error');
+  next();
+})
 
 app.use('/', indexRouter);
 app.use('/auth', usersRouter);
@@ -42,15 +70,5 @@ app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
 
 module.exports = app;

@@ -4,9 +4,10 @@ const moment     = require('moment');
 
 const router    = express.Router();
 const Movie     = require('../models/movieSchema');
+const {cekAuth} = require('../config/auth');
 
 // Get All Movies
-router.get('/', function(req, res, next){
+router.get('/', cekAuth, function(req, res, next){
     let listMovies = [];
     Movie.find(function(err, movies){
         if (movies) {
@@ -30,14 +31,14 @@ router.get('/', function(req, res, next){
 });
 
 // Create Movies
-router.get('/create', function(req, res, next) {
+router.get('/create', cekAuth, function(req, res, next) {
     res.render('movie/createMovies',{
         title:'Create Movies'
     })
 });
 
 //Update Movie
-router.get('/update/:movieId', function(req, res, next) {
+router.get('/update/:movieId', cekAuth, function(req, res, next) {
 
     Movie.findById(req.params.movieId, function(err, movieInfo){
         const newDate = moment(movieInfo.release_on).format("YYYY-MM-DD");
@@ -52,7 +53,7 @@ router.get('/update/:movieId', function(req, res, next) {
 });
 
 //Action create
-router.post('/create', function(req, res){
+router.post('/create', cekAuth, function(req, res){
     const {name, date} = req.body;
     
     let errors = [];
@@ -75,7 +76,7 @@ router.post('/create', function(req, res){
 });
 
 //Action Update , jika menggunakan API menggunakan put jika tidak menggunakan API gunakan post
-router.post('/update', function(req, res){
+router.post('/update', cekAuth, function(req, res){
     let errors = [];
 
     Movie.findByIdAndUpdate(req.body.id,{name:req.body.name, release_on: req.body.date}, function(err){
@@ -95,7 +96,7 @@ router.post('/update', function(req, res){
 });
 
 //Action Delete jika menggunakan API menggunakan delete jika tidak menggunakan API gunakan get
-router.get('/delete/:movieId', function(req, res){
+router.get('/delete/:movieId', cekAuth, function(req, res){
    Movie.findByIdAndDelete(req.params.movieId, function(){
        res.redirect('/movies');
    });
